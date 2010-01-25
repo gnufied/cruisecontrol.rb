@@ -13,12 +13,12 @@ class TwitterNotifier < BuilderPlugin
   end
 
   def build_finished(build)
-    return if not auth_info?
+    return if(!auth_info? or !build.failed?)
     twit(build, "#{build.project.name} build #{build.url} failed")
   end
 
-  def build_fixed(build)
-    return if not !auth_info?
+  def build_fixed(build,previous_build)
+    return if not auth_info?
     twit(build,"#{build.project.name} build #{build.url} fixed")
   end
 
