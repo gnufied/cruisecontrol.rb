@@ -29,3 +29,6 @@ class TwitterNotifier < BuilderPlugin
   end
 end
 
+
+Project.plugin :twitter_notifier
+
