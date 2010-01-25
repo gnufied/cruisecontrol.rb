@@ -59,7 +59,7 @@ Rails::Initializer.run do |config|
 end
 
 require RAILS_ROOT + '/lib/cruise_control/version'
-require 'smtp_tls'
+require 'smtp_tls' if(RUBY_VERSION < '1.8.7')
 require 'date'
 require 'fileutils'
 
