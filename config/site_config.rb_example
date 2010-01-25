@@ -51,6 +51,10 @@
 # build page in the notification message.
 # Configuration.dashboard_url = 'http://my.cruisecontrolrb.host/'
 
+# For twitter integration
+# Configuration.twitter_username = 'foo'
+# Configuration.twitter_password = 'bar'
+
 # If you don't want to allow triggering builds through dashboard Build Now button. Useful when you host CC.rb as a
 # public web site (such as http://cruisecontrolrb.thoughtworks.com/projects - try clicking on Build Now button there
 # and see what happens):

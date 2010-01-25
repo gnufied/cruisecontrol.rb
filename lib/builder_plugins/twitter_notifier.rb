@@ -24,6 +24,7 @@ class TwitterNotifier < BuilderPlugin
 
   def twit(build, messsage)
     twitter_auth_info = Twitter::HTTPAuth.new(@username,@password,:ssl => true)
+    CruiseControl::Log.event("Sent twit to #{username} and password #{password}",:debug)
     client = Twitter::Base.new(twitter_auth_info)
     client.update(messsage)
   end
