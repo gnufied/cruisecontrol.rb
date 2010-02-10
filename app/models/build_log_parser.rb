@@ -13,13 +13,14 @@ class BuildLogParser
   TEST_NAME_REGEX = /\S+/
   MESSAGE_REGEX = /\]\:\n([\s\S]+)/
   STACK_TRACE_REGEX = /\[([\s\S]*?)\]\:/
-
+  CUCUMBER_ERROR_REGEX = /^\s+([\.\/\(].+)/
+  
   def initialize(log)
     @log = log
   end
 
   def errors
-    test_errors + rspec_errors
+    test_errors + rspec_errors + cucumber_errors
   end
 
   def test_errors
@@ -42,6 +43,30 @@ class BuildLogParser
         rest_of_the_message, stack_trace = rspec_rest_of_message_and_stack_trace(content)
         message = "#{exception_name} in '#{spec_name}'\n#{rest_of_the_message}"
         errors << TestErrorEntry.create_error(spec_name, message, stack_trace)
+      end
+    end
+    errors
+  end
+
+  def cucumber_errors
+    errors = []
+    data_array = @log.split("\n")
+    exceptions = []
+
+    data_array.each_with_index do |line,index|
+      if(line =~ CUCUMBER_ERROR_REGEX)
+        if(data_array[index-1] !~ CUCUMBER_ERROR_REGEX)
+          exceptions << data_array[index-2] if(index-2 >= 0)
+          exceptions << data_array[index-1] if(index-1 >= 0)
+          exceptions << line
+        elsif(data_array[index+1] !~ CUCUMBER_ERROR_REGEX)
+          exceptions << line
+          exceptions << data_array[index+1]
+          errors << TestErrorEntry.create_error("","",exceptions.join("\n").strip)
+          exceptions = []
+        else
+          exceptions << line
+        end
       end
     end
     errors

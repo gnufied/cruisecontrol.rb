@@ -19,6 +19,7 @@ end
 
 namespace :cc do
 
+  desc "build this thing"
   task 'build' do
 
     # if custom rake task defined, invoke that
