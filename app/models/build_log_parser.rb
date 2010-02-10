@@ -50,9 +50,11 @@ class BuildLogParser
 
   def cucumber_errors
     errors = []
-    data_array = @log.split("\n")
     exceptions = []
 
+    cucumber_logs = @log.split("Using the default profile...",2)[1]
+    
+    data_array = (cucumber_logs.blank?) ? [] : cucumber_logs.split("\n")
     data_array.each_with_index do |line,index|
       if(line =~ CUCUMBER_ERROR_REGEX)
         if(data_array[index-1] !~ CUCUMBER_ERROR_REGEX)
@@ -62,7 +64,7 @@ class BuildLogParser
         elsif(data_array[index+1] !~ CUCUMBER_ERROR_REGEX)
           exceptions << line
           exceptions << data_array[index+1]
-          errors << TestErrorEntry.create_error("","",exceptions.join("\n").strip)
+          errors << TestErrorEntry.create_error("Cucumber Story error",data_array[index+1].strip,exceptions.join("\n").strip)
           exceptions = []
         else
           exceptions << line
