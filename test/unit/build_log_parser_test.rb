@@ -222,6 +222,62 @@ Finished in 0.007491 seconds
 4 examples, 2 failures, 1 pending
 EOF
 
+CUCUMBER_OUTPUT_SIMPLE =<<-EOF
+/opt/ruby-enterprise-1.8.7-2010.01/bin/ruby -I "/opt/ruby-enterprise-1.8.7-2010.01/lib/ruby/gems/1.8/gems/cucumber-0.6.2/lib:lib" "/opt/ruby-enterprise-1.8.7-2010.01/lib/ruby/gems/1.8/gems/cucumber-0.6.2/bin/cucumber"  --profile default
+Mocha deprecation warning: Mocha::Standalone has been renamed to Mocha::API
+/home/crriadmin/.cruise/projects/solaro_imp_master_merge/work/features/step_definitions/../../test/mocks/user_mock.rb:5: warning: already initialized constant ATTRS
+Using the default profile...
+Feature: Manage student_sending_test_reports
+
+  Scenario: student should be able to send cluster test report                                                                       # features/manage_student_sending_test_reports.feature:3
+    Given I am logged in student                                                                                                     # features/step_definitions/user_login_steps.rb:40
+    And I have taken a cluster test                                                                                                  # features/step_definitions/student_sending_test_report_steps.rb:29
+      unknown attribute: end_time (ActiveRecord::UnknownAttributeError)
+      ./features/step_definitions/student_sending_test_report_steps.rb:38:in `/^I have taken a cluster test$/'
+      features/manage_student_sending_test_reports.feature:5:in `And I have taken a cluster test'
+    And I am on "the cluster exam report page"                                                                                       # features/step_definitions/webrat_steps.rb:14
+    Then I should see "Share this report with my teacher"                                                                            # features/step_definitions/webrat_steps.rb:142
+    Then I fill in "email" with "somenewteacher@techer.com"                                                                          # features/step_definitions/webrat_steps.rb:34
+    And I press ajax btn "Send"                                                                                                      # features/step_definitions/ajax_action_steps.rb:16
+    Then I should see "Report is sent to your teacher and your parent is notified that you have shared the result with the teacher." # features/step_definitions/webrat_steps.rb:142
+
+  Scenario: student should be able to send topic test report                                                                         # features/manage_student_sending_test_reports.feature:11
+    Given I am logged in student                                                                                                     # features/step_definitions/user_login_steps.rb:40
+    And I have taken a topic test                                                                                                    # features/step_definitions/student_sending_test_report_steps.rb:3
+    And I am on "the topic exam report page"                                                                                         # features/step_definitions/webrat_steps.rb:14
+    Then I should see "Share this report with my teacher"                                                                            # features/step_definitions/webrat_steps.rb:142
+    Then I fill in "email" with "somenewteacher@techer.com"                                                                          # features/step_definitions/webrat_steps.rb:34
+    And I press ajax btn "Send"                                                                                                      # features/step_definitions/ajax_action_steps.rb:16
+    Then I should see "Report is sent to your teacher and your parent is notified that you have shared the result with the teacher." # features/step_definitions/webrat_steps.rb:142
+
+  Scenario: student should be able to send passage test report                                                                       # features/manage_student_sending_test_reports.feature:19
+    Given I am logged in student                                                                                                     # features/step_definitions/user_login_steps.rb:40
+    And I have taken a passage test                                                                                                  # features/step_definitions/student_sending_test_report_steps.rb:15
+    And I am on "the passage exam report page"                                                                                       # features/step_definitions/webrat_steps.rb:14
+    Then I should see "Share this report with my teacher"                                                                            # features/step_definitions/webrat_steps.rb:142
+    Then I fill in "email" with "somenewteacher@techer.com"                                                                          # features/step_definitions/webrat_steps.rb:34
+    And I press ajax btn "Send"                                                                                                      # features/step_definitions/ajax_action_steps.rb:16
+    Then I should see "Report is sent to your teacher and your parent is notified that you have shared the result with the teacher." # features/step_definitions/webrat_steps.rb:142
+
+Failing Scenarios:
+cucumber features/manage_student_sending_test_reports.feature:3 # Scenario: student should be able to send cluster test report
+
+3 scenarios (1 failed, 2 passed)
+21 steps (1 failed, 5 skipped, 15 passed)
+0m6.070s
+Errors running cucumber!
+
+dir : /home/crriadmin/.cruise/projects/solaro_imp_master_merge/work
+command : echo /home/crriadmin/.cruise/projects/solaro_imp_master_merge/work crriadmin$ ruby\ -e\ \"require\ \'rubygems\'\ rescue\ nil\;\ require\ \'rake\'\;\ load\ \'/home/crriadmin/cruisecontrol.rb/tasks/cc_build.rake\'\;\ ARGV\ \<\<\ \'--nosearch\'\ \<\<\ \'cc:build\'\;\ Rake.application.run\;\ ARGV.clear\" >> /home/crriadmin/.cruise/projects/solaro_imp_master_merge/build-91a6683fea03448a9a29af9ceaa13778d877d718/build.log && ruby -e "require 'rubygems' rescue nil; require 'rake'; load '/home/crriadmin/cruisecontrol.rb/tasks/cc_build.rake'; ARGV << '--nosearch' << 'cc:build'; Rake.application.run; ARGV.clear" >> /home/crriadmin/.cruise/projects/solaro_imp_master_merge/build-91a6683fea03448a9a29af9ceaa13778d877d718/build.log 2>&1
+exitstatus: 1
+EOF
+  
+  def test_should_find_cucumber_simple_errors
+    cucumber_errors = BuildLogParser.new(CUCUMBER_OUTPUT_SIMPLE).errors
+    assert_equal 1, cucumber_errors.length
+    assert_match(/the cluster exam report page/,cucumber_errors[0].message)
+  end
+
   def test_should_not_find_test_failures_with_a_build_with_test_errors_on_windows
     assert BuildLogParser.new(LOG_OUTPUT_WITH_TEST_ERRORS_ON_WINDOWS).failures.empty?
   end
@@ -417,4 +473,5 @@ EOF
     failures = BuildLogParser.new(COMPLEX_RSPEC_FAILURE).failures
     assert_equal 2, failures.length
   end
+
 end

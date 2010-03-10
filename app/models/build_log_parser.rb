@@ -13,7 +13,9 @@ class BuildLogParser
   TEST_NAME_REGEX = /\S+/
   MESSAGE_REGEX = /\]\:\n([\s\S]+)/
   STACK_TRACE_REGEX = /\[([\s\S]*?)\]\:/
-  CUCUMBER_ERROR_REGEX = /^\s+([\.\/\(].+)/
+  #CUCUMBER_ERROR_REGEX = /^\s+([\.\/\(].+)/
+  CUCUMBER_ERROR_REGEX = /^\s+features\/*/
+  SCENARIO_REGEX = /^\s+Scenario(\s+)?:/
   
   def initialize(log)
     @log = log
@@ -50,25 +52,23 @@ class BuildLogParser
 
   def cucumber_errors
     errors = []
-    exceptions = []
-
     cucumber_logs = @log.split("Using the default profile...",2)[1]
     
     data_array = (cucumber_logs.blank?) ? [] : cucumber_logs.split("\n")
     data_array.each_with_index do |line,index|
       if(line =~ CUCUMBER_ERROR_REGEX)
-        if(data_array[index-1] !~ CUCUMBER_ERROR_REGEX)
-          exceptions << data_array[index-2] if(index-2 >= 0)
-          exceptions << data_array[index-1] if(index-1 >= 0)
-          exceptions << line
-        elsif(data_array[index+1] !~ CUCUMBER_ERROR_REGEX)
-          exceptions << line
-          exceptions << data_array[index+1]
-          errors << TestErrorEntry.create_error("Cucumber Story error",data_array[index+1].strip,exceptions.join("\n").strip)
-          exceptions = []
-        else
-          exceptions << line
+        current_index = index-1
+        backtrace = []
+        while(current_index >= 0 && data_array[current_index] !~ SCENARIO_REGEX)
+          backtrace << data_array[current_index]
+          current_index -= 1
         end
+        backtrace << data_array[current_index] if(current_index >= 0)
+        backtrace.reverse!
+
+        backtrace << line
+        backtrace << data_array[index+1]
+        errors << TestErrorEntry.create_error("Cucumber Story error",data_array[index+1].strip,backtrace.join("\n").strip)
       end
     end
     errors
