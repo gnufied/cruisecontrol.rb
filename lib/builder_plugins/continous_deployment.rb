@@ -4,14 +4,14 @@ class ContinuousDeployment < BuilderPlugin
   include FileUtils
   def initialize(project = nil)
     @project = project
-    @revision = @project.revision[0..6]
   end
 
   def build_finished(build)
     if(build.successful? && @project.auto_deploy)
+      revision = build.revision[0..6]
       cd(@project.path) do
-        CruiseControl::Log.event("Going to auto deploy to #{@project.deploy_env} and revision #{@revision}")
-        run("cap #{@project.deploy_env} deploy DEPLOY_SHA=#{@revision}")
+        CruiseControl::Log.event("Going to auto deploy to #{@project.deploy_env} and revision #{revision}")
+        run("cap #{@project.deploy_env} deploy DEPLOY_SHA=#{revision}")
       end
     end
   end
