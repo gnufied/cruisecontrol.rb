@@ -14,3 +14,11 @@ public/builds
 .DS_Store
 tmtags
 TAGS
+build.log
+config/site_config.rb
+cucumber.log
+lib/builder_plugins/continous_deployment.rb
+parser_error.rb
+try_it.rb
+vendor/plugins/growl_notifier/
+
