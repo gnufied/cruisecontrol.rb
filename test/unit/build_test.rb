@@ -51,6 +51,14 @@ class BuildTest < ActiveSupport::TestCase
     end
   end
 
+  def test_should_give_sha_given_correct_label
+    with_sandbox_project do |sandbox,project|
+      sandbox.new :file => "705af2456734d3e5d19ed7703cdddfd60706bc52-success.in816s/build.log", :with_content => "Some content"
+      build = Build.new(project,"705af2456734d3e5d19ed7703cdddfd60706bc52-success.in816s")
+      assert_equal "705af24", build.revision[0..6]
+    end
+  end
+
   def test_initialize_should_load_failed_status_file
     with_sandbox_project do |sandbox, project|
       sandbox.new :directory => "build-2-failed.in2s"

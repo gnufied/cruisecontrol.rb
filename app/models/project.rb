@@ -2,7 +2,7 @@
 # each time a build is triggered and yielded back to be configured by cruise_config.rb.
 class Project
   attr_reader :name, :plugins, :build_command, :rake_task, :config_tracker, :path, :settings, :config_file_content, :error_message
-  attr_accessor :source_control, :scheduler
+  attr_accessor :source_control, :scheduler,:auto_deploy,:deploy_env
   
   class << self
     attr_accessor_with_default :plugin_names, []
@@ -96,6 +96,7 @@ class Project
     @config_file_content = ''
     @error_message = ''
     @triggers = [ChangeInSourceControlTrigger.new(self)]
+    @auto_deploy = false
     self.source_control = scm if scm
     instantiate_plugins
   end
